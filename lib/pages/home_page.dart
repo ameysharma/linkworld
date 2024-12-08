@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+// ignore: unused_import
 import 'package:firebase_core/firebase_core.dart';
+import 'profile_page.dart';  // Import ProfilePage here
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -12,96 +16,147 @@ class _HomePageState extends State<HomePage> {
       FirebaseFirestore.instance.collection('products');
 
   int _selectedIndex = 0; // To track bottom navigation selection
-
   final List<String> _menuItems = ["Market", "Orders", "Profile"]; // Menu options
 
-  // Method to handle navigation in bottom navigation bar
-  void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
 
-  Widget _buildContent() {
-    return FutureBuilder(
-      future: Firebase.initializeApp(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        }
-        if (snapshot.hasError) {
-          return Center(
-            child: Text(
-              'Firebase initialization failed!',
-              style: TextStyle(fontSize: 18, color: Colors.red),
-            ),
-          );
-        }
+  // Marketplace Page Content
+  Widget _buildMarketplaceSection() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        bool isDesktop = constraints.maxWidth > 600; // Determine if it's desktop layout
 
-        return StreamBuilder<QuerySnapshot>(
-          stream: productsRef.snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            }
-            if (snapshot.hasError) {
-              return Center(
-                child: Text(
-                  'Error fetching products!',
-                  style: TextStyle(fontSize: 18, color: Colors.red),
-                ),
-              );
-            }
-            if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
-              final products = snapshot.data!.docs.map((doc) {
-                return doc.data() as Map<String, dynamic>;
-              }).toList();
-
-              return ListView.builder(
-                itemCount: products.length,
-                itemBuilder: (context, index) {
-                  final product = products[index];
-                  return Card(
-                    margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: ListTile(
-                      leading: Icon(Icons.shopping_bag,
-                          color: Theme.of(context).primaryColor),
-                      title: Text(
-                        product['name'] ?? 'Unnamed Product',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text(
-                        'Price: ₹${product['price'] ?? 'N/A'}',
-                        style: TextStyle(color: Colors.grey[700]),
-                      ),
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: isDesktop
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildMarketplaceCard(
+                      title: 'Buy Products',
+                      color: Colors.green[100],
+                      icon: Icons.shopping_cart,
+                      iconColor: Colors.green,
                       onTap: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                                'Selected: ${product['name'] ?? 'Unnamed Product'}'),
-                          ),
+                          const SnackBar(content: Text('Navigating to Buy section...')),
                         );
                       },
                     ),
-                  );
-                },
-              );
-            } else {
-              return Center(
-                child: Text(
-                  'No products available',
-                  style: TextStyle(fontSize: 18, color: Colors.grey),
+                    _buildMarketplaceCard(
+                      title: 'Sell Products',
+                      color: Colors.blue[100],
+                      icon: Icons.sell,
+                      iconColor: Colors.blue,
+                      onTap: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Navigating to Sell section...')),
+                        );
+                      },
+                    ),
+                  ],
+                )
+              : Column(
+                  children: [
+                    _buildMarketplaceCard(
+                      title: 'Buy Products',
+                      color: Colors.green[100],
+                      icon: Icons.shopping_cart,
+                      iconColor: Colors.green,
+                      onTap: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Navigating to Buy section...')),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    _buildMarketplaceCard(
+                      title: 'Sell Products',
+                      color: Colors.blue[100],
+                      icon: Icons.sell,
+                      iconColor: Colors.blue,
+                      onTap: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Navigating to Sell section...')),
+                        );
+                      },
+                    ),
+                  ],
                 ),
-              );
-            }
-          },
         );
       },
     );
+  }
+
+  Widget _buildMarketplaceCard({
+    required String title,
+    required Color? color,
+    required IconData icon,
+    required Color iconColor,
+    required VoidCallback onTap,
+  }) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Card(
+          color: color,
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon, size: 50, color: iconColor),
+                const SizedBox(height: 10),
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: iconColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Orders Section
+  Widget _buildOrdersSection() {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: const [
+          Icon(Icons.shopping_bag, size: 50, color: Colors.orange),
+          SizedBox(height: 10),
+          Text(
+            'Orders Section',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 20),
+          Text('Here you can view and manage your orders.'),
+        ],
+      ),
+    );
+  }
+
+  // Content Builder
+  Widget _buildContent() {
+    if (_selectedIndex == 0) {
+      return _buildMarketplaceSection(); // Show Marketplace Section for "Market"
+    } else if (_selectedIndex == 1) {
+      return _buildOrdersSection(); // Show Orders Section
+    } else {
+      return const ProfilePage(); // Show Profile Section (from profile_page.dart)
+    }
   }
 
   @override
@@ -111,20 +166,30 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Marketplace'),
+        title: const Text('Marketplace'),
         centerTitle: true,
+        // Adding the Hamburger menu icon to open the Drawer
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () {
+              Scaffold.of(context).openEndDrawer(); // Open the drawer
+            },
+          ),
+        ],
       ),
       body: Row(
         children: [
-          if (isDesktop) // Desktop Side Menu
+          // Desktop layout with the Sidebar Menu (NavigationRail)
+          if (isDesktop) 
             NavigationRail(
               selectedIndex: _selectedIndex,
               onDestinationSelected: _onItemTapped,
               labelType: NavigationRailLabelType.all,
               destinations: _menuItems
                   .map((item) => NavigationRailDestination(
-                        icon: Icon(Icons.circle),
-                        selectedIcon: Icon(Icons.circle_rounded),
+                        icon: const Icon(Icons.circle),
+                        selectedIcon: const Icon(Icons.circle_rounded),
                         label: Text(item),
                       ))
                   .toList(),
@@ -139,11 +204,28 @@ class _HomePageState extends State<HomePage> {
               onTap: _onItemTapped,
               items: _menuItems
                   .map((item) => BottomNavigationBarItem(
-                        icon: Icon(Icons.circle),
+                        icon: const Icon(Icons.circle),
                         label: item,
                       ))
                   .toList(),
             ),
+      endDrawer: Drawer(  // Right-side drawer (for mobile)
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: _menuItems.map((item) {
+            return ListTile(
+              title: Text(item),
+              onTap: () {
+                int index = _menuItems.indexOf(item);
+                setState(() {
+                  _selectedIndex = index;
+                });
+                Navigator.pop(context);  // Close the drawer after item selection
+              },
+            );
+          }).toList(),
+        ),
+      ),
     );
   }
 }

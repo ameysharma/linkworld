@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class AuthenticationPage extends StatefulWidget {
+  const AuthenticationPage({super.key});
+
   @override
   _AuthenticationPageState createState() => _AuthenticationPageState();
 }
@@ -41,28 +43,28 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("B2B Marketplace")),
+      appBar: AppBar(title: const Text("B2B Marketplace")),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: <Widget>[
             TextField(
               controller: _emailController,
-              decoration: InputDecoration(labelText: "Email"),
+              decoration: const InputDecoration(labelText: "Email"),
             ),
             TextField(
               controller: _passwordController,
               obscureText: true,
-              decoration: InputDecoration(labelText: "Password"),
+              decoration: const InputDecoration(labelText: "Password"),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _login,
-              child: Text("Login"),
+              child: const Text("Login"),
             ),
             ElevatedButton(
               onPressed: _register,
-              child: Text("Register"),
+              child: const Text("Register"),
             ),
           ],
         ),
