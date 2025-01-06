@@ -11,13 +11,13 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: 
   FirebaseOptions(
-      apiKey: "AIzaSyDOp0hRTFdbl1_sxO-SHt1oVZ2ezReLu_U",
-      authDomain: "b2bmarketplace-468c9.firebaseapp.com",
-      projectId: "b2bmarketplace-468c9",
-      storageBucket: "b2bmarketplace-468c9.firebasestorage.app",
-      messagingSenderId: "638655904280",
-      appId: "1:638655904280:web:d01a6a73c1b1b80955a16d",
-      measurementId: "G-LPZ0WSKYMB"
+      apiKey: "",
+      authDomain: "",
+      projectId: "",
+      storageBucket: "",
+      messagingSenderId: "",
+      appId: "",
+      measurementId: ""
       ),);
   runApp(MyApp());
 }
